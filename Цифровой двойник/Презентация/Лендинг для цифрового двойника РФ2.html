@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Цифровой двойник России</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ТЁМНАЯ ТЕМА */
+  :root {
+    --bg: #060910;
+    --bg-elev: rgba(6, 9, 16, 0.7);
+    --bg-card: rgba(0, 194, 255, 0.02);
+    --bg-card-hover: rgba(0, 194, 255, 0.05);
+    --border: rgba(0, 194, 255, 0.1);
+    --border-strong: rgba(0, 194, 255, 0.25);
+    --text: #E8EDF5;
+    --text-secondary: #B8C8E0;
+    --text-muted: #8FA8C8;
+    --text-dim: #5A6B85;
+    --text-faint: #3A4A6B;
+    --accent: #00C2FF;
+    --accent-warm: #FF9E3D;
+    --star: #fff;
+    --planet-1: #1a3050;
+    --planet-2: #0a1828;
+    --planet-3: #060910;
+  }
+
+  /* СВЕТЛАЯ ТЕМА (по умолчанию) */
+  body.light {
+    --bg: #F0F4FA;
+    --bg-elev: rgba(255, 255, 255, 0.85);
+    --bg-card: rgba(0, 100, 180, 0.03);
+    --bg-card-hover: rgba(0, 100, 180, 0.07);
+    --border: rgba(0, 100, 180, 0.12);
+    --border-strong: rgba(0, 100, 180, 0.3);
+    --text: #0A1628;
+    --text-secondary: #2A3A55;
+    --text-muted: #5A6B85;
+    --text-dim: #8A9AB5;
+    --text-faint: #B8C4D8;
+    --accent: #0078B8;
+    --accent-warm: #C87020;
+    --star: #0A1628;
+    --planet-1: #B8D0E8;
+    --planet-2: #D8E4F0;
+    --planet-3: #F0F4FA;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+
+  .space {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 80% 20%, rgba(0, 100, 180, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 20% 80%, rgba(0, 60, 120, 0.1) 0%, transparent 50%),
+      var(--bg);
+    transition: background 0.4s ease;
+  }
+
+  body.light .space {
+    background:
+      radial-gradient(circle at 80% 20%, rgba(0, 140, 220, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 20% 80%, rgba(0, 100, 180, 0.05) 0%, transparent 50%),
+      var(--bg);
+  }
+
+  .space::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 15% 25%, var(--star), transparent),
+      radial-gradient(1px 1px at 45% 65%, var(--star), transparent),
+      radial-gradient(1px 1px at 75% 15%, var(--star), transparent),
+      radial-gradient(1px 1px at 85% 75%, var(--star), transparent),
+      radial-gradient(1px 1px at 25% 85%, var(--star), transparent),
+      radial-gradient(1px 1px at 55% 35%, var(--star), transparent),
+      radial-gradient(1px 1px at 95% 45%, var(--star), transparent),
+      radial-gradient(1px 1px at 5% 55%, var(--star), transparent);
+    background-size: 100% 100%;
+    opacity: 0.5;
+    animation: twinkle 8s ease-in-out infinite;
+    transition: opacity 0.4s ease;
+  }
+
+  body.light .space::before { opacity: 0.15; }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.8; }
+  }
+
+  .space::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 120px 120px;
+    opacity: 0.3;
+  }
+
+  .planet {
+    position: fixed;
+    bottom: -60%;
+    right: -20%;
+    width: 900px;
+    height: 900px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--planet-1) 0%, var(--planet-2) 50%, var(--planet-3) 80%);
+    box-shadow:
+      0 0 200px 60px rgba(0, 150, 255, 0.08),
+      inset -60px -60px 150px rgba(0, 0, 0, 0.3),
+      inset 40px 40px 100px rgba(0, 194, 255, 0.08);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.8;
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  body.light .planet {
+    box-shadow:
+      0 0 200px 60px rgba(0, 120, 200, 0.05),
+      inset -60px -60px 150px rgba(0, 0, 0, 0.05),
+      inset 40px 40px 100px rgba(0, 140, 220, 0.08);
+    opacity: 0.5;
+  }
+
+  .orbit {
+    position: fixed;
+    bottom: -50%;
+    right: -10%;
+    width: 1100px;
+    height: 1100px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    pointer-events: none;
+    z-index: 0;
+    animation: spin 180s linear infinite;
+  }
+
+  .orbit::before {
+    content: "";
+    position: absolute;
+    top: 50%; left: 0;
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 15px 3px rgba(0, 194, 255, 0.6);
+    transform: translateY(-50%);
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 40px 100px;
+  }
+
+  /* ШАПКА */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 80px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: background 0.4s ease, border-color 0.4s ease;
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .header-mark {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .header-mark::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+    border-radius: 2px;
+    box-shadow: 0 0 12px rgba(0, 194, 255, 0.8);
+  }
+
+  .header-title {
+    font-size: 0.9em;
+    color: var(--text);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .header-title span {
+    display: block;
+    font-size: 0.75em;
+    color: var(--text-dim);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* ЛАМПОЧКА */
+  .theme-toggle {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-card);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--accent);
+    padding: 0;
+    font-family: inherit;
+  }
+
+  .theme-toggle:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(0, 194, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .theme-toggle svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.4s ease;
+  }
+
+  .theme-toggle:hover svg { transform: rotate(15deg); }
+
+  .theme-toggle .icon-sun,
+  .theme-toggle .icon-moon { display: none; }
+
+  body:not(.light) .theme-toggle .icon-sun { display: block; }
+  body.light .theme-toggle .icon-moon { display: block; }
+
+  /* ТИТУЛ */
+  .hero {
+    padding: 60px 0 120px;
+    max-width: 800px;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    padding: 6px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75em;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .hero h1 {
+    font-size: 4em;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 32px;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .hero h1 em { font-style: normal; color: var(--accent); }
+
+  .hero-lead {
+    font-size: 1.4em;
+    color: var(--text-muted);
+    font-weight: 300;
+    line-height: 1.5;
+    margin-bottom: 48px;
+    max-width: 640px;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+
+  .hero-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .hero-meta-item .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7em;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .hero-meta-item .value {
+    font-size: 1.1em;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* СЛАЙДЫ */
+  .slide {
+    padding: 80px 0;
+    border-top: 1px solid var(--border);
+    position: relative;
+  }
+
+  .slide-header {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 60px;
+    margin-bottom: 60px;
+  }
+
+  .slide-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    padding-top: 8px;
+    position: relative;
+  }
+
+  .slide-num::before {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--accent);
+    margin-bottom: 16px;
+    box-shadow: 0 0 10px rgba(0, 194, 255, 0.6);
+  }
+
+  .slide-title {
+    font-size: 2.4em;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .slide-subtitle {
+    font-size: 1.1em;
+    color: var(--text-muted);
+    font-weight: 400;
+    line-height: 1.6;
+    max-width: 700px;
+  }
+
+  .slide-body {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 60px;
+  }
+
+  .slide-content {
+    grid-column: 2;
+    max-width: 780px;
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    font-size: 1.05em;
+  }
+
+  h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 500;
+    margin: 48px 0 24px;
+  }
+
+  h3:first-child { margin-top: 0; }
+
+  ul {
+    list-style: none;
+    margin: 0 0 32px;
+  }
+
+  ul li {
+    color: var(--text-secondary);
+    padding: 14px 0 14px 32px;
+    position: relative;
+    font-size: 1.05em;
+    border-bottom: 1px solid var(--border);
+  }
+
+  ul li:last-child { border-bottom: none; }
+
+  ul li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 22px;
+    width: 12px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .highlight { color: var(--accent-warm); font-weight: 600; }
+  .accent { color: var(--accent); font-weight: 600; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 32px 0;
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin: 32px 0;
+  }
+
+  .col-box {
+    padding: 28px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .col-box:hover { border-color: var(--border-strong); }
+
+  .col-box h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8em;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+
+  .col-box ul { margin: 0; }
+
+  .col-box ul li {
+    font-size: 0.95em;
+    padding: 10px 0 10px 24px;
+    border-bottom: none;
+  }
+
+  .col-box ul li::before {
+    top: 18px;
+    width: 10px;
+  }
+
+  /* СХЕМА КОНВЕЙЕР */
+  .pipeline {
+    display: flex;
+    gap: 0;
+    margin: 40px 0;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .pipe-step {
+    flex: 1;
+    padding: 28px 24px;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border);
+    position: relative;
+    transition: background 0.3s ease;
+  }
+
+  .pipe-step:last-child {
+    border-right: none;
+    background: rgba(255, 158, 61, 0.04);
+  }
+
+  body.light .pipe-step:last-child { background: rgba(200, 112, 32, 0.06); }
+
+  .pipe-step:hover { background: var(--bg-card-hover); }
+
+  .pipe-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7em;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    margin-bottom: 12px;
+  }
+
+  .pipe-step:last-child .pipe-num {
+    color: var(--accent-warm);
+    opacity: 0.7;
+  }
+
+  .pipe-title {
+    font-size: 1em;
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .pipe-step:last-child .pipe-title { color: var(--accent-warm); }
+
+  .pipe-desc {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* ДЕТАЛЬНАЯ СХЕМА */
+  .detail-diagram {
+    margin: 40px 0;
+    padding: 48px 40px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    position: relative;
+  }
+
+  .detail-diagram::before {
+    content: "СХЕМА РАБОТЫ";
+    position: absolute;
+    top: -10px;
+    left: 32px;
+    padding: 0 12px;
+    background: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75em;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+  }
+
+  .diagram-layer {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 32px;
+    padding: 28px 0;
+    border-bottom: 1px dashed var(--border);
+    align-items: start;
+  }
+
+  .diagram-layer:last-child { border-bottom: none; }
+
+  .layer-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75em;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding-top: 4px;
+    position: relative;
+    padding-left: 20px;
+  }
+
+  .layer-label::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 10px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .layer-content {
+    color: var(--text-secondary);
+    font-size: 0.98em;
+    line-height: 1.6;
+  }
+
+  .layer-content strong {
+    color: var(--text);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .layer-content .layer-detail {
+    color: var(--text-muted);
+    font-size: 0.92em;
+    margin-bottom: 10px;
+  }
+
+  .layer-content .layer-list {
+    list-style: none;
+    margin: 12px 0 0;
+  }
+
+  .layer-content .layer-list li {
+    padding: 6px 0 6px 20px;
+    font-size: 0.9em;
+    color: var(--text-muted);
+    border-bottom: none;
+    position: relative;
+  }
+
+  .layer-content .layer-list li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    color: var(--accent);
+    font-size: 0.8em;
+    width: auto;
+    height: auto;
+    background: none;
+  }
+
+  .diagram-layer.final .layer-label { color: var(--accent-warm); }
+  .diagram-layer.final .layer-label::before { background: var(--accent-warm); }
+  .diagram-layer.final .layer-content strong { color: var(--accent-warm); }
+
+  /* АРХИТЕКТУРА */
+  .stack {
+    margin: 40px 0;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .stack-row {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 24px;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-card);
+    align-items: center;
+    transition: background 0.3s ease;
+  }
+
+  .stack-row:last-child {
+    border-bottom: none;
+    background: rgba(255, 158, 61, 0.04);
+  }
+
+  body.light .stack-row:last-child { background: rgba(200, 112, 32, 0.06); }
+
+  .stack-row:hover { background: var(--bg-card-hover); }
+
+  .stack-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+
+  .stack-row:last-child .stack-num { color: var(--accent-warm); }
+
+  .stack-text {
+    font-size: 0.98em;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .stack-text strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* КОНТУРЫ */
+  .contours {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin: 40px 0;
+  }
+
+  .contour {
+    padding: 24px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .contour:hover {
+    border-color: var(--border-strong);
+    background: var(--bg-card-hover);
+  }
+
+  .contour-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2em;
+    color: var(--accent);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+
+  .contour-name {
+    font-size: 0.9em;
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .contour-desc {
+    font-size: 0.75em;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  /* ТАБЛИЦА КОНТУРОВ */
+  .contour-table {
+    margin: 40px 0;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .contour-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 140px;
+    gap: 24px;
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-card);
+    align-items: start;
+    transition: background 0.3s ease;
+  }
+
+  .contour-row:last-child { border-bottom: none; }
+  .contour-row:hover { background: var(--bg-card-hover); }
+
+  .contour-row .c-name {
+    font-size: 0.95em;
+    color: var(--text);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .contour-row .c-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8em;
+    color: var(--accent);
+    padding: 2px 8px;
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+  }
+
+  .contour-row .c-desc {
+    font-size: 0.92em;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .contour-row .c-user {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding-top: 3px;
+  }
+
+  /* СТАТИСТИКА */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin: 40px 0;
+  }
+
+  .stat {
+    padding: 32px 28px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    position: relative;
+  }
+
+  .stat::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  .stat-value {
+    font-size: 3em;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  /* УГТ */
+  .ugt {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 40px 0;
+  }
+
+  .ugt-box {
+    padding: 40px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+  }
+
+  .ugt-box.target {
+    background: rgba(255, 158, 61, 0.03);
+    border-color: rgba(255, 158, 61, 0.25);
+  }
+
+  body.light .ugt-box.target { background: rgba(200, 112, 32, 0.05); }
+
+  .ugt-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 16px;
+  }
+
+  .ugt-box.target .ugt-label { color: var(--accent-warm); opacity: 0.7; }
+
+  .ugt-value {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
+
+  .ugt-box.target .ugt-value { color: var(--accent-warm); }
+
+  .ugt-desc {
+    font-size: 0.95em;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* ЗАПРОС */
+  .ask {
+    padding: 48px;
+    background: rgba(255, 158, 61, 0.03);
+    border: 1px solid rgba(255, 158, 61, 0.2);
+    border-radius: 8px;
+    margin: 40px 0;
+    position: relative;
+  }
+
+  body.light .ask { background: rgba(200, 112, 32, 0.05); }
+
+  .ask::before {
+    content: "ЗАПРОС";
+    position: absolute;
+    top: -10px;
+    left: 32px;
+    padding: 0 12px;
+    background: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75em;
+    color: var(--accent-warm);
+    letter-spacing: 0.15em;
+  }
+
+  .ask ul li { border-bottom: 1px solid rgba(255, 158, 61, 0.1); }
+  .ask ul li::before { background: var(--accent-warm); }
+
+  .badges {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+
+  .badge {
+    padding: 8px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75em;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .badge.orange {
+    background: rgba(255, 158, 61, 0.05);
+    border-color: rgba(255, 158, 61, 0.3);
+    color: var(--accent-warm);
+  }
+
+  /* ТАБЛИЦА */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 32px 0;
+    font-size: 0.95em;
+  }
+
+  th {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg-card);
+    color: var(--accent);
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid var(--border-strong);
+  }
+
+  td {
+    padding: 16px 20px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg-card); }
+
+  /* КОНТАКТЫ */
+  .contacts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 40px;
+  }
+
+  .contact {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .contact:hover {
+    border-color: var(--border-strong);
+    background: var(--bg-card-hover);
+  }
+
+  .contact-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    color: var(--accent);
+  }
+
+  .contact-text strong {
+    display: block;
+    color: var(--text);
+    font-size: 0.95em;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .contact-text span {
+    color: var(--text-dim);
+    font-size: 0.8em;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ФИНАЛ */
+  .final {
+    padding: 120px 0;
+    text-align: center;
+    border-top: 1px solid var(--border);
+  }
+
+  .final h2 {
+    font-size: 3em;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+  }
+
+  .final p {
+    font-size: 1.2em;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto 16px;
+    font-weight: 300;
+  }
+
+  footer {
+    padding: 60px 0 40px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75em;
+    color: var(--text-faint);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 900px) {
+    .page { padding: 40px 20px 80px; }
+    .header { padding: 12px 16px; margin-bottom: 40px; }
+    .header-title { font-size: 0.85em; }
+
+    .hero h1 { font-size: 2.4em; }
+    .hero-lead { font-size: 1.1em; }
+    .hero-meta { gap: 24px; }
+
+    .slide-header { grid-template-columns: 1fr; gap: 16px; margin-bottom: 40px; }
+    .slide-title { font-size: 1.7em; }
+    .slide-body { grid-template-columns: 1fr; gap: 0; }
+    .slide-content { grid-column: 1; }
+    .slide-num { padding-top: 0; }
+
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .contours { grid-template-columns: repeat(2, 1fr); }
+    .contour-row { grid-template-columns: 1fr; gap: 12px; }
+    .stats { grid-template-columns: 1fr; gap: 16px; }
+    .ugt { grid-template-columns: 1fr; }
+    .contacts { grid-template-columns: 1fr; }
+
+    .pipeline { flex-direction: column; }
+    .pipe-step { border-right: none; border-bottom: 1px solid var(--border); }
+    .pipe-step:last-child { border-bottom: none; }
+
+    .detail-diagram { padding: 32px 20px; }
+    .diagram-layer { grid-template-columns: 1fr; gap: 12px; }
+
+    .ask { padding: 32px 24px; }
+    table { font-size: 0.85em; }
+    th, td { padding: 12px 14px; }
+  }
+</style>
+</head>
+<body class="light">
+
+<div class="space"></div>
+<div class="planet"></div>
+<div class="orbit"></div>
+
+<div class="page">
+
+  <!-- ШАПКА -->
+  <div class="header">
+    <div class="header-brand">
+      <div class="header-mark"></div>
+      <div class="header-title">
+        Цифровой двойник России
+        <span>Заявка в организацию · 2026</span>
+      </div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"></circle>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+      </svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- ТИТУЛ -->
+  <section class="hero">
+    <div class="hero-tag">Программное решение · ИИ · Двойное назначение</div>
+    <h1>Цифровой двойник <em>России</em></h1>
+    <p class="hero-lead">
+      Защищённая межведомственная платформа учёта, визуализации
+      и сценарного моделирования ресурсов, инфраструктуры, производства,
+      логистики и рисков.
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="label">Стадия</span>
+        <span class="value">УГТ 2</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">Сценариев</span>
+        <span class="value">120</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">Доменов</span>
+        <span class="value">15</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">Контуров</span>
+        <span class="value">5</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 ПРОБЛЕМА -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">01 / Проблема</div>
+      <div>
+        <h2 class="slide-title">Данные есть —<br>общей картины нет</h2>
+        <p class="slide-subtitle">
+          Ресурсы, инфраструктура и риски разнесены по ведомствам, форматам и срокам.
+          Решения принимаются по фрагментам.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <h3>Симптомы сегодня</h3>
+        <ul>
+          <li>Данные о ресурсах разнесены по ведомствам, форматам и срокам</li>
+          <li>Не всегда понятно, откуда взят показатель и насколько он свежий</li>
+          <li>Одни и те же объекты по-разному названы в разных системах</li>
+          <li>Получение данных требует индивидуальных выгрузок</li>
+          <li>Зависимости энергетики, транспорта, связи видны только после сбоя</li>
+          <li>Альтернативы оцениваются вручную, выборочно и медленно</li>
+          <li>Программы федерального, регионального и муниципального уровня плохо стыкуются</li>
+        </ul>
+
+        <h3>Последствия без проекта</h3>
+        <ul>
+          <li>Решения принимаются по фрагментам, дефициты обнаруживаются поздно</li>
+          <li>Споры о цифрах вместо споров о решениях</li>
+          <li>Дублирование объектов, ошибки в анализе</li>
+          <li>Долгий межведомственный цикл, теневые таблицы Excel</li>
+          <li>Выбирается «привычный», а не наилучший вариант</li>
+          <li>Каскадные отказы и долгие восстановления</li>
+          <li>Поздняя реакция на отклонения</li>
+        </ul>
+
+        <p style="margin-top: 24px;">
+          <span class="highlight">Опыт последних лет показал:</span>
+          устойчивость инфраструктуры надо моделировать заранее,
+          а не восстанавливать постфактум.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 РЕШЕНИЕ -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">02 / Решение</div>
+      <div>
+        <h2 class="slide-title">Связующий слой,<br>а не замена</h2>
+        <p class="slide-subtitle">
+          Программный комплекс с применением ИИ для оценки устойчивости
+          критической инфраструктуры и поддержки принятия решений.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <div class="two-col">
+          <div class="col-box">
+            <h4>Что делает</h4>
+            <ul>
+              <li>Связывает разрозненные данные о сетях</li>
+              <li>Строит граф зависимостей</li>
+              <li>Выявляет точки отказа</li>
+              <li>Моделирует каскадные эффекты</li>
+              <li>Подбирает резервные маршруты</li>
+              <li>Формирует ответ-условие для ЛПР</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <h4>Что даёт</h4>
+            <ul>
+              <li>Ответ-условие вместо сырых данных</li>
+              <li>Поддержку ситуационных центров</li>
+              <li>Сценарии реагирования на ЧС</li>
+              <li>Оценку устойчивости сетей</li>
+              <li>Планирование резервирования</li>
+              <li>Обоснование инвестиционных решений</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Чего проект не делает</h3>
+        <ul>
+          <li>Не подменяет ведомственные реестры и кадастры</li>
+          <li>Не заменяет официальную статистику</li>
+          <li>Не централизует персональные данные</li>
+          <li>Не отменяет существующие регламенты доступа</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 КАК РАБОТАЕТ СИСТЕМА — КРАТКО -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">03 / Система</div>
+      <div>
+        <h2 class="slide-title">Как работает<br>система</h2>
+        <p class="slide-subtitle">
+          От разрозненных данных — к управленческому ответу.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <div class="pipeline">
+          <div class="pipe-step">
+            <div class="pipe-num">УРОВЕНЬ 01</div>
+            <div class="pipe-title">Источники</div>
+            <div class="pipe-desc">НСПД, ЕМИСС, ФГИС ЕФГИ, ГИСП</div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">УРОВЕНЬ 02</div>
+            <div class="pipe-title">Связывание</div>
+            <div class="pipe-desc">Единая модель территории</div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">УРОВЕНЬ 03</div>
+            <div class="pipe-title">ИИ-обработка</div>
+            <div class="pipe-desc">Сценарии, прогнозы, дефициты</div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">УРОВЕНЬ 04</div>
+            <div class="pipe-title">Ответ-условие</div>
+            <div class="pipe-desc">«Можно, при условиях...»</div>
+          </div>
+        </div>
+
+        <h3>Что это даёт</h3>
+        <ul>
+          <li><span class="accent">Пользователь видит не сырые данные</span> — а готовое решение</li>
+          <li><span class="accent">Каждый ответ объясним</span> — видна цепочка расчёта</li>
+          <li><span class="accent">Чувствительные данные не раскрываются</span> — работают контуры</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 ДЕТАЛЬНАЯ СХЕМА РАБОТЫ СИСТЕМЫ -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">04 / Детально</div>
+      <div>
+        <h2 class="slide-title">Как устроена<br>обработка данных</h2>
+        <p class="slide-subtitle">
+          Пять слоёв: от первичных источников до управленческого ответа.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <div class="detail-diagram">
+          <div class="diagram-layer">
+            <div class="layer-label">Слой 01<br>Источники</div>
+            <div class="layer-content">
+              <strong>Подключение внешних систем</strong>
+              <div class="layer-detail">
+                Данные поступают из разных источников в разных форматах.
+                Система не требует от них единого стандарта на входе.
+              </div>
+              <ul class="layer-list">
+                <li>НСПД — пространственные данные и кадастр</li>
+                <li>ЕМИСС — официальная статистика Росстата</li>
+                <li>ФГИС ЕФГИ — геология и недра</li>
+                <li>ГИСП — промышленность и меры поддержки</li>
+                <li>Отраслевые и региональные системы</li>
+                <li>Датчики и потоковые данные</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="diagram-layer">
+            <div class="layer-label">Слой 02<br>Нормализация</div>
+            <div class="layer-content">
+              <strong>Сведение к единому формату</strong>
+              <div class="layer-detail">
+                Каждый объект получает единое описание. Устраняются дубликаты.
+                Фиксируется источник, дата и качество данных.
+              </div>
+              <ul class="layer-list">
+                <li>Приведение к единым справочникам и классификаторам</li>
+                <li>Геокодирование объектов</li>
+                <li>Устранение дубликатов и конфликтов</li>
+                <li>Фиксация источника, даты и качества данных</li>
+                <li>Формирование паспорта качества для каждого слоя</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="diagram-layer">
+            <div class="layer-label">Слой 03<br>ИИ-обработка</div>
+            <div class="layer-content">
+              <strong>Анализ и синтез</strong>
+              <div class="layer-detail">
+                ИИ-модели работают с нормализованными данными. Каждый расчёт
+                журналируется, модели версионируются.
+              </div>
+              <ul class="layer-list">
+                <li>Сопоставление слоёв данных</li>
+                <li>Поиск дефицитов и конфликтов</li>
+                <li>Выявление зависимостей между объектами</li>
+                <li>Оценка рисков и каскадных эффектов</li>
+                <li>Построение сценариев и прогнозов</li>
+                <li>Формирование ответа-условия</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="diagram-layer">
+            <div class="layer-label">Слой 04<br>Контуры</div>
+            <div class="layer-content">
+              <strong>Разграничение доступа</strong>
+              <div class="layer-detail">
+                Пять контуров изолируют данные разной чувствительности.
+                Между контурами передаётся только вывод, а не первичная запись.
+              </div>
+              <ul class="layer-list">
+                <li>Открытый — агрегированные показатели для граждан и бизнеса</li>
+                <li>Ведомственный — детализированная аналитика для органов власти</li>
+                <li>Инфраструктурный — устойчивость сетей для операторов</li>
+                <li>Закрытый — чувствительные сценарии для узкого круга</li>
+                <li>Исследовательский — обезличенные наборы для науки</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="diagram-layer final">
+            <div class="layer-label">Слой 05<br>Ответ</div>
+            <div class="layer-content">
+              <strong>Управленческий ответ-условие</strong>
+              <div class="layer-detail">
+                Пользователь получает не сырые данные, а конкретный ответ.
+                Каждый ответ объясним: видна цепочка расчёта, допущения и ограничения.
+              </div>
+              <ul class="layer-list">
+                <li>«Можно» — решение реализуемо при текущих условиях</li>
+                <li>«Нельзя» — есть блокирующие ограничения</li>
+                <li>«Можно при условиях» — перечень требований для реализации</li>
+                <li>Видна цепочка расчёта и источник каждого показателя</li>
+                <li>Указаны допущения и ограничения модели</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 АРХИТЕКТУРА -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">05 / Архитектура</div>
+      <div>
+        <h2 class="slide-title">Пять уровней<br>обработки</h2>
+        <p class="slide-subtitle">
+          От сбора данных до ответа пользователю.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <div class="stack">
+          <div class="stack-row">
+            <div class="stack-num">01</div>
+            <div class="stack-text">
+              <strong>Источники данных</strong> — НСПД, ЕМИСС, ФГИС ЕФГИ, ГИСП, отраслевые системы, датчики, потоковые данные
+            </div>
+          </div>
+          <div class="stack-row">
+            <div class="stack-num">02</div>
+            <div class="stack-text">
+              <strong>Связующий слой</strong> — нормализация, единые справочники, геокодирование, паспорта качества
+            </div>
+          </div>
+          <div class="stack-row">
+            <div class="stack-num">03</div>
+            <div class="stack-text">
+              <strong>ИИ-обработка</strong> — сценарное моделирование, прогнозирование, поиск дефицитов, оценка рисков
+            </div>
+          </div>
+          <div class="stack-row">
+            <div class="stack-num">04</div>
+            <div class="stack-text">
+              <strong>Контуры доступа</strong> — открытый, ведомственный, инфраструктурный, закрытый, исследовательский
+            </div>
+          </div>
+          <div class="stack-row">
+            <div class="stack-num">05</div>
+            <div class="stack-text">
+              <strong>Пользователь</strong> — получает ответ-условие с цепочкой расчёта и допущениями
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 КОНТУРЫ -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">06 / Контуры</div>
+      <div>
+        <h2 class="slide-title">Пять контуров<br>доступа</h2>
+        <p class="slide-subtitle">
+          Регламент «вывод вместо первичной записи» — чувствительные данные не раскрываются.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <div class="contour-table">
+          <div class="contour-row">
+            <div class="c-name"><span class="c-num">01</span> Открытый</div>
+            <div class="c-desc">Агрегированные показатели, карты, отчёты. Данные для граждан, бизнеса, науки и СМИ.</div>
+            <div class="c-user">Граждане, бизнес</div>
+          </div>
+          <div class="contour-row">
+            <div class="c-name"><span class="c-num">02</span> Ведомственный</div>
+            <div class="c-desc">Детализированная межведомственная аналитика. Согласование решений между органами власти.</div>
+            <div class="c-user">Органы власти</div>
+          </div>
+          <div class="contour-row">
+            <div class="c-name"><span class="c-num">03</span> Инфраструктурный</div>
+            <div class="c-desc">Устойчивость сетей, маршрутов и объектов. Работа с операторами критической инфраструктуры.</div>
+            <div class="c-user">Операторы</div>
+          </div>
+          <div class="contour-row">
+            <div class="c-name"><span class="c-num">04</span> Закрытый</div>
+            <div class="c-desc">Чувствительные сценарии, резервы, мобилизационное планирование. Доступ по решению.</div>
+            <div class="c-user">Узкий круг</div>
+          </div>
+          <div class="contour-row">
+            <div class="c-name"><span class="c-num">05</span> Исследовательский</div>
+            <div class="c-desc">Синтетические и обезличенные наборы. Работа науки и разработчиков с моделями.</div>
+            <div class="c-user">Наука, разработчики</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 ИИ -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">07 / ИИ</div>
+      <div>
+        <h2 class="slide-title">Как работает<br>искусственный интеллект</h2>
+        <p class="slide-subtitle">
+          Система не показывает сырые данные — она формирует управленческий ответ.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <div class="pipeline">
+          <div class="pipe-step">
+            <div class="pipe-num">ШАГ 01</div>
+            <div class="pipe-title">Запрос</div>
+            <div class="pipe-desc">«Можно ли разместить производство?»</div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">ШАГ 02</div>
+            <div class="pipe-title">Обработка</div>
+            <div class="pipe-desc">Слои, модели, ограничения</div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">ШАГ 03</div>
+            <div class="pipe-title">Ответ-условие</div>
+            <div class="pipe-desc">«Можно, при условиях...»</div>
+          </div>
+        </div>
+
+        <h3>Что делает ИИ</h3>
+        <div class="two-col">
+          <div class="col-box">
+            <h4>Анализ</h4>
+            <ul>
+              <li>Сопоставляет слои данных</li>
+              <li>Находит дефициты и конфликты</li>
+              <li>Выявляет зависимости</li>
+              <li>Оценивает риски</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <h4>Синтез</h4>
+            <ul>
+              <li>Строит сценарии</li>
+              <li>Прогнозирует последствия</li>
+              <li>Предлагает альтернативы</li>
+              <li>Формирует ответ-условие</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Принципы работы</h3>
+        <ul>
+          <li><span class="accent">Прозрачность</span> — видна цепочка расчёта и допущения</li>
+          <li><span class="accent">Воспроизводимость</span> — версии моделей и журналирование каждого расчёта</li>
+          <li><span class="accent">Объяснимость</span> — понятно, на каких данных построен вывод</li>
+          <li><span class="accent">Проверяемость</span> — спорные сценарии проверяются на нескольких моделях</li>
+        </ul>
+
+        <h3>Что ИИ не делает</h3>
+        <ul>
+          <li><span class="accent">Не принимает решения за человека</span> — формирует варианты и условия</li>
+          <li><span class="accent">Не раскрывает чувствительные данные</span> — работает в контурах</li>
+          <li><span class="accent">Не заменяет эксперта</span> — даёт обоснование для выбора</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 СЦЕНАРНОЕ МОДЕЛИРОВАНИЕ -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">08 / Сценарии</div>
+      <div>
+        <h2 class="slide-title">Сценарное<br>моделирование</h2>
+        <p class="slide-subtitle">
+          Основная функция системы — проверить решение до реализации.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <h3>Минимальный набор</h3>
+        <ul>
+          <li><span class="accent">Запуск производства</span> — кадры, энергия, сырьё, логистика</li>
+          <li><span class="accent">Изменение транспортной схемы</span> — устойчивость и резервирование</li>
+          <li><span class="accent">Переобучение под отраслевой запрос</span> — программы и дефициты</li>
+          <li><span class="accent">Реакция на ЧС</span> — ресурсы, маршруты, пункты помощи</li>
+          <li><span class="accent">Сравнение площадок</span> — инфраструктура, кадры, экология</li>
+        </ul>
+
+        <h3>Принципы моделирования</h3>
+        <div class="two-col">
+          <div class="col-box">
+            <h4>Прозрачность</h4>
+            <ul>
+              <li>Результаты с ограничениями и допущениями</li>
+              <li>Видна цепочка расчёта, а не только итог</li>
+              <li>Модели версионируются вместе с данными</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <h4>Надёжность</h4>
+            <ul>
+              <li>Спорные сценарии проверяются на нескольких моделях</li>
+              <li>Каждый расчёт журналируется</li>
+              <li>Результат можно воспроизвести</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 ЧТО СДЕЛАНО -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">09 / Статус</div>
+      <div>
+        <h2 class="slide-title">Что уже<br>сделано</h2>
+        <p class="slide-subtitle">
+          Концепция, архитектура и документация готовы к следующему этапу.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-value">120</div>
+            <div class="stat-label">Сценариев</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">15</div>
+            <div class="stat-label">Доменов</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">15</div>
+            <div class="stat-label">Услуг</div>
+          </div>
+        </div>
+        <ul>
+          <li>Концепция и пятиконтурная архитектура спроектированы</li>
+          <li>Описано 120 сценариев по 15 доменам</li>
+          <li>Сформирован перечень 15 типовых услуг</li>
+          <li>Подобран отечественный стек</li>
+          <li>Спроектирована модель ИИ-обработки: сценарное моделирование, прогнозирование, поиск дефицитов</li>
+          <li>Сделан слой с кадрами — первые демо-данные</li>
+          <li>Сгенерирован обучающий курс по цифровому двойнику</li>
+          <li>Обращение в Администрацию Президента РФ отправлено</li>
+          <li>Заявка в акселератор подана</li>
+          <li>Поддерживается публичная документация проекта</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 ГОТОВНОСТЬ -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">10 / Готовность</div>
+      <div>
+        <h2 class="slide-title">Уровень<br>готовности</h2>
+        <p class="slide-subtitle">
+          Определены целевые области и критические элементы технологии.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <div class="ugt">
+          <div class="ugt-box">
+            <div class="ugt-label">Сейчас</div>
+            <div class="ugt-value">УГТ 2</div>
+            <div class="ugt-desc">Целевые области и критические элементы определены</div>
+          </div>
+          <div class="ugt-box target">
+            <div class="ugt-label">Цель</div>
+            <div class="ugt-value">УГТ 3–4</div>
+            <div class="ugt-desc">Экспериментальное подтверждение и лабораторный прототип</div>
+          </div>
+        </div>
+        <p style="margin-top: 24px;">
+          <span class="accent">Следующий шаг:</span> демо на открытых данных.
+          Без согласований, без бюджета на интеграцию, за 2–3 месяца.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 ЗАПРОС -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">11 / Запрос</div>
+      <div>
+        <h2 class="slide-title">Что нужно<br>от организации</h2>
+        <p class="slide-subtitle">
+          Поддержка на этапе перехода от концепции к прототипу.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <div class="ask">
+          <ul>
+            <li>Экспертная оценка и инженерное сопровождение</li>
+            <li>Помощь в доработке и верификации технической концепции</li>
+            <li>Доступ к лабораторной и испытательной базе</li>
+            <li>Грантовая поддержка для доведения до прототипа</li>
+            <li>Помощь в выходе на государственного оператора</li>
+          </ul>
+        </div>
+        <div class="badges">
+          <span class="badge orange">Принимаем физлицо</span>
+          <span class="badge">Программные решения с ИИ</span>
+          <span class="badge">Двойное назначение</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 ДОРОЖНАЯ КАРТА -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">12 / План</div>
+      <div>
+        <h2 class="slide-title">Дорожная<br>карта</h2>
+        <p class="slide-subtitle">
+          Два этапа: демо на открытых данных, затем пилот в регионе.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <h3>Первый этап — 2–3 месяца</h3>
+        <ul>
+          <li>Сформулировать запрос двойника на данные</li>
+          <li>Разобрать открытые источники: НСПД, ЕМИСС, ФГИС ЕФГИ, ГИСП</li>
+          <li>Описать стандарт данных</li>
+          <li>Собрать демо с 6–10 сценариями</li>
+        </ul>
+        <h3>Второй этап — по результатам демо</h3>
+        <ul>
+          <li>Пилот в регионе</li>
+          <li>Подключение ведомственных слоёв</li>
+          <li>Команда 8–10 человек</li>
+          <li>Финансирование 18–24 млн ₽</li>
+        </ul>
+        <h3>Третий этап — долгосрочный горизонт</h3>
+        <ul>
+          <li>Инфраструктурный контур</li>
+          <li>Расширение на 5–7 регионов</li>
+          <li>Команда 10–15 человек</li>
+          <li>Подготовка к сертификации</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 ТЕХНОЛОГИИ -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">13 / Технологии</div>
+      <div>
+        <h2 class="slide-title">Стек и<br>соответствие</h2>
+        <p class="slide-subtitle">
+          Отечественные и открытые компоненты. Готовность к сертификации.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <div class="two-col">
+          <div class="col-box">
+            <h4>Стек</h4>
+            <ul>
+              <li>PostgreSQL / PostGIS — данные</li>
+              <li>FastAPI — API и сервисы</li>
+              <li>MapLibre / CesiumJS — карта и 3D</li>
+              <li>Keycloak — доступ и роли</li>
+              <li>Docker — контейнеризация</li>
+              <li>Отечественные ОС (Astra / Alt / РЕД ОС)</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <h4>Соответствие</h4>
+            <ul>
+              <li>Сертификация ФСТЭК / ФСБ</li>
+              <li>Технологический суверенитет</li>
+              <li>Локальное хранение данных</li>
+              <li>Открытые стандарты обмена</li>
+              <li>Переносимость компонентов</li>
+              <li>Независимость от одного поставщика</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 РЫНОК -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">14 / Рынок</div>
+      <div>
+        <h2 class="slide-title">Заказчики<br>и применение</h2>
+        <p class="slide-subtitle">
+          B2G — основной сегмент. B2B — дополнительный.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <h3>Основные заказчики (B2G)</h3>
+        <table>
+          <tr>
+            <th>Заказчик</th>
+            <th>Что покупает</th>
+          </tr>
+          <tr><td>Федеральные органы власти</td><td>Межведомственный контур планирования и сценарного моделирования</td></tr>
+          <tr><td>Региональные правительства</td><td>Региональный паспорт ресурсов, кадров и инфраструктуры</td></tr>
+          <tr><td>Муниципалитеты</td><td>Городской слой двойника с привязкой к федеральной модели</td></tr>
+          <tr><td>Ситуационные центры</td><td>Картина устойчивости, ресурсов и маршрутов для ЧС</td></tr>
+          <tr><td>Институты развития</td><td>Аналитика для проектного финансирования</td></tr>
+        </table>
+
+        <h3>Дополнительные заказчики (B2B)</h3>
+        <table>
+          <tr>
+            <th>Заказчик</th>
+            <th>Что покупает</th>
+          </tr>
+          <tr><td>Инфраструктурные операторы</td><td>Сервис «функция запроса / ответ-условие»</td></tr>
+          <tr><td>Промышленные кластеры</td><td>Цифровой двойник предприятия</td></tr>
+          <tr><td>Транспорт и логистика</td><td>Оптимизация маршрутов и цепочек снабжения</td></tr>
+          <tr><td>Девелоперы и инвесторы</td><td>Подбор площадок по инфраструктуре и кадрам</td></tr>
+          <tr><td>Образование и занятость</td><td>Карта дефицитов и образовательных треков</td></tr>
+          <tr><td>Наука и разработчики</td><td>API и обезличенные наборы данных</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 КОНКУРЕНТЫ -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">15 / Конкуренты</div>
+      <div>
+        <h2 class="slide-title">Позиция<br>на рынке</h2>
+        <p class="slide-subtitle">
+          Прямых конкурентов на уровне суверенного цифрового двойника государства нет.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <h3>Российские смежные системы</h3>
+        <table>
+          <tr>
+            <th>Система</th>
+            <th>Профиль</th>
+            <th>Где пересекается</th>
+          </tr>
+          <tr><td>НСПД</td><td>Геоданные, кадастр</td><td>Базовый геопространственный слой</td></tr>
+          <tr><td>ФГИС ЕФГИ</td><td>Геология, недра</td><td>Ресурсный слой</td></tr>
+          <tr><td>ЕМИСС</td><td>Официальная статистика</td><td>Агрегированные показатели</td></tr>
+          <tr><td>ГИСП</td><td>Промышленность</td><td>Производственный слой</td></tr>
+          <tr><td>«ГосТех»</td><td>Платформа ГИС</td><td>Среда развёртывания</td></tr>
+          <tr><td>«Цифровой двойник Москвы»</td><td>Городская 3D-модель</td><td>Городской уровень</td></tr>
+        </table>
+        <p>
+          Это <span class="accent">не прямые конкуренты</span>, а потенциальные источники данных
+          и сопредельные продукты.
+        </p>
+
+        <h3>Международные аналоги</h3>
+        <table>
+          <tr>
+            <th>Аналог</th>
+            <th>Профиль</th>
+            <th>Ограничения</th>
+          </tr>
+          <tr><td>Destination Earth (ЕС)</td><td>Климат и погода</td><td>Не покрывает ресурсное планирование</td></tr>
+          <tr><td>ESA Digital Twin Earth</td><td>Наблюдение Земли</td><td>Экологический фокус</td></tr>
+          <tr><td>Google Earth Engine</td><td>Планетарная геоаналитика</td><td>Не суверенная система</td></tr>
+          <tr><td>NVIDIA Earth-2</td><td>AI-моделирование климата</td><td>Климатический фокус</td></tr>
+          <tr><td>Virtual Singapore</td><td>Городской двойник</td><td>Городской масштаб</td></tr>
+        </table>
+
+        <p style="margin-top: 24px;">
+          <span class="accent">Наша роль:</span> связующее звено между существующими системами
+          и компетенция обмена выводами между контурами без раскрытия первичных данных.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16 КОНТАКТЫ -->
+  <section class="slide">
+    <div class="slide-header">
+      <div class="slide-num">16 / Контакты</div>
+      <div>
+        <h2 class="slide-title">Связаться<br>с проектом</h2>
+        <p class="slide-subtitle">
+          Готовы предоставить документацию и провести демонстрацию.
+        </p>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div></div>
+      <div class="slide-content">
+        <div class="contacts">
+          <a href="https://vk.ru/pavel_chur" target="_blank" class="contact">
+            <div class="contact-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.194c.136-.148.132-.427.132-.427s-.02-1.304.576-1.496c.587-.189 1.34 1.262 2.137 1.821.604.423 1.063.33 1.063.33l2.135-.03s1.116-.07.586-.964c-.043-.073-.307-.657-1.579-1.86-1.331-1.26-2.884-1.23-2.884-1.23l-.077-.004c.402-.175 2.797-4.399.584-4.399 0 0-.077-.012-.216-.012-.385 0-1.535.052-1.535.052s-.284-.024-.478.132c-.178.143-.36.484-.36.484l-.85 2.387s-.405 1.057-.739 1.057c-.116 0-.237-.062-.297-.197-.127-.287-.04-2.55-.04-2.55s.005-.282-.086-.42c-.092-.137-.31-.192-.31-.192s-.5-.012-.815-.012c-.317 0-.677.012-.677.012s-.286.032-.44.194c-.143.148-.132.427-.132.427s.045 1.412.045 2.512c0 .264.032.483.064.617.062.265.242.41.455.41.354 0 1.005-.387 1.005-.387l1.4-1.792s.5-.675.795-.313c.296.363.02 1.666.02 1.666s-.05.445-.036.63c.013.185.117.408.417.408.5 0 1.362-.787 1.362-.787l1.554-2.362s.52-.777.83-.303c.31.475-.38 2.443-.38 2.443s-.06.463.13.71c.192.244.408.214.408.214l1.626-.045s1.77-.153 1.015-1.526c-.757-1.372-2.062-2.14-2.062-2.14l-.077-.052c.354-.177 1.554-1.31.975-2.515-.58-1.205-1.155-.986-1.155-.986l-.994.07s-.42-.05-.657.174c-.238.225-.914 2.523-.914 2.523l-.66 2.85s-.135.66-.65.46c-.514-.2-.56-1.02-.56-1.02l.297-2.576s.083-.826-.02-1.31c-.102-.484-.428-.66-.428-.66l-1.34-.06s-.494-.05-.79.198c-.294.247-.36.71-.36.71l-.07 1.28-.443 3.664s-.15 1.02-.83.565c-.68-.456-1.32-1.637-1.32-1.637"/></svg>
+            </div>
+            <div class="contact-text">
+              <strong>Павел Чуркин</strong>
+              <span>VK · автор</span>
+            </div>
+          </a>
+          <a href="https://vk.ru/digital_twin_of_russia" target="_blank" class="contact">
+            <div class="contact-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.194c.136-.148.132-.427.132-.427s-.02-1.304.576-1.496c.587-.189 1.34 1.262 2.137 1.821.604.423 1.063.33 1.063.33l2.135-.03s1.116-.07.586-.964c-.043-.073-.307-.657-1.579-1.86-1.331-1.26-2.884-1.23-2.884-1.23l-.077-.004c.402-.175 2.797-4.399.584-4.399 0 0-.077-.012-.216-.012-.385 0-1.535.052-1.535.052s-.284-.024-.478.132c-.178.143-.36.484-.36.484l-.85 2.387s-.405 1.057-.739 1.057c-.116 0-.237-.062-.297-.197-.127-.287-.04-2.55-.04-2.55s.005-.282-.086-.42c-.092-.137-.31-.192-.31-.192s-.5-.012-.815-.012c-.317 0-.677.012-.677.012s-.286.032-.44.194c-.143.148-.132.427-.132.427s.045 1.412.045 2.512c0 .264.032.483.064.617.062.265.242.41.455.41.354 0 1.005-.387 1.005-.387l1.4-1.792s.5-.675.795-.313c.296.363.02 1.666.02 1.666s-.05.445-.036.63c.013.185.117.408.417.408.5 0 1.362-.787 1.362-.787l1.554-2.362s.52-.777.83-.303c.31.475-.38 2.443-.38 2.443s-.06.463.13.71c.192.244.408.214.408.214l1.626-.045s1.77-.153 1.015-1.526c-.757-1.372-2.062-2.14-2.062-2.14l-.077-.052c.354-.177 1.554-1.31.975-2.515-.58-1.205-1.155-.986-1.155-.986l-.994.07s-.42-.05-.657.174c-.238.225-.914 2.523-.914 2.523l-.66 2.85s-.135.66-.65.46c-.514-.2-.56-1.02-.56-1.02l.297-2.576s.083-.826-.02-1.31c-.102-.484-.428-.66-.428-.66l-1.34-.06s-.494-.05-.79.198c-.294.247-.36.71-.36.71l-.07 1.28-.443 3.664s-.15 1.02-.83.565c-.68-.456-1.32-1.637-1.32-1.637"/></svg>
+            </div>
+            <div class="contact-text">
+              <strong>Группа ВК</strong>
+              <span>digital_twin</span>
+            </div>
+          </a>
+          <a href="https://github.com/PavelChurkin/resource-based-economy-Article/tree/main/Цифровой%20двойник" target="_blank" class="contact">
+            <div class="contact-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            </div>
+            <div class="contact-text">
+              <strong>GitHub</strong>
+              <span>resource-based</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ФИНАЛ -->
+  <section class="final">
+    <h2>Готовы к диалогу</h2>
+    <p>Сначала доказать концепцию на открытых данных.</p>
+    <p>Потом — масштабировать.</p>
+  </section>
+
+  <footer>
+    Цифровой двойник России · 2026
+  </footer>
+
+</div>
+
+<script>
+  (function() {
+    var toggle = document.getElementById('themeToggle');
+    var saved = localStorage.getItem('theme');
+    if (saved === 'dark') {
+      document.body.classList.remove('light');
+    } else {
+      document.body.classList.add('light');
+    }
+    toggle.addEventListener('click', function() {
+      document.body.classList.toggle('light');
+      var theme = document.body.classList.contains('light') ? 'light' : 'dark';
+      localStorage.setItem('theme', theme);
+    });
+  })();
+</script>
+
+</body>
+</html>
